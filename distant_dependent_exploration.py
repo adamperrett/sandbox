@@ -3,13 +3,27 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pyNN.random import NumpyRNG, RandomDistribution
 from pyNN.utility.plotting import Figure, Panel
+import scipy.stats as spy
 
 def weight_distribution(pop_size):
     base_weight = np.random.randn() / np.sqrt(pop_size)
     # base_weight = 0
     return base_weight
 
-
+def generate_distant_dependent_from_list(sheet_dimensions, stdev):
+    width = sheet_dimensions[0]
+    height = sheet_dimensions[1]
+    connections = []
+    for width_pre in range(width):
+        for height_pre in range(height):
+            for width_post in range(width):
+                for height_post in range(height):
+                    distance = np.sqrt(np.power(width_post - width_pre, 2) + np.power(height_post - height_pre, 2))
+                    pre_neuron = (height_pre * width) + width_pre
+                    post_neuron = (height_post * width) + width_post
+                    if np.random.random() < (spy.norm.ppf(distance / stdev) - 0.5) * 2:
+                        weight = 0.1#weight_distribution(width*height)
+                        connections.append([pre_neuron, post_neuron, weight, 1])
 
 np.random.seed(272727)
 
